@@ -4,12 +4,6 @@ var locks = {
     manual: false
 }
 
-$('table.events').footable().bind({   
-    footable_paging: function(e) {
-        e.page > 0 ? lockTable('auto') : unlockTable('auto');
-    }
-});
-
 function lockTable(key) {
     locks[key] = true;
     $('#autoRefreshButtonGroup').removeClass('active').addClass('inactive');
@@ -29,17 +23,24 @@ function isLocked() {
 (function poll() {
     if (isLocked()) return setTimeout(poll, interval);
     $.ajax({
-        url : '/plugin/dashboard/events',
+        url : '/plugin/event-log/events',
         success : function(data) {
             $('table.events tbody tr').remove();
             $('table.events tbody').append(data).trigger('footable_redraw');
+        },
+        complete: function() {
+            setTimeout(poll, interval);
         }
-    }).done(function() {
-        setTimeout(poll, interval);
     })   
 })();
 
 $(function() {
     $('#autoRefreshButtonGroup .active').on('click', lockTable.bind(this, 'manual'));
     $('#autoRefreshButtonGroup .inactive').on('click', unlockTable.bind(this, 'manual'));    
+
+    $('table.events').footable().bind({   
+        footable_paging: function(e) {
+            e.page > 0 ? lockTable('auto') : unlockTable('auto');
+        }
+    });    
 })

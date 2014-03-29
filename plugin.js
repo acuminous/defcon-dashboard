@@ -2,27 +2,29 @@ var express = require('express');
 var packageJson = require('./package.json');
 var path = require('path');
 var HandlebarsHelpers = require('./lib/util/HandlebarsHelpers');
+var EventRepository = require('./lib/EventRepository')
 var _ = require('lodash');
 
 module.exports = plugin;
 
-function plugin(defcon, app) {
+function plugin(defcon, app, config, next) {
 
-    var url = defcon.getPluginUrl('Dashboard');
+    var repository = new EventRepository(config.repository)
+    var url = defcon.getPluginUrl('Event Log');
 
-    var config = {
+    var pluginDetails = {
         ui: true,        
-        name: 'Dashboard',
-        url: defcon.getPluginUrl('Dashboard'),
+        name: 'Events',
+        url: defcon.getPluginUrl('Event Log'),
         icon: 'fa fa-list',
         css: [ url + '/dist/css/bundle-libs.css', url + '/dist/css/bundle.css' ],
         js: [ url + '/dist/js/bundle-libs.js', url + '/dist/js/bundle.js' ]
     } 
 
-    var events = [];
-
     defcon.on('event', function(event) {
-        events.push(event);
+        repository.save(event, function(err) {
+            if (err) app.get('logger').error('Error saving event: %s', err.message);
+        });
     })    
 
     var staticDir = path.join(defcon.getPluginDir(packageJson.name), 'static');
@@ -33,21 +35,29 @@ function plugin(defcon, app) {
     handlebarsConfig.partialsDir.push(viewsDir);
     _.extend(handlebarsConfig.helpers, new HandlebarsHelpers());
 
-    app.get(config.url, function(req, res) {
+    app.get(pluginDetails.url, function(req, res) {
         app.set('views', path.join(viewsDir));        
-        res.render('dashboard', { 
-            defcon: defcon,
-            plugin: config,
-            events: events
-        });
+        repository.list(function(err, events) {
+            if (err) return res.send(500, 'Error retrieving events: ' + err.message);
+            res.render('event-log', { 
+                defcon: defcon,
+                plugin: pluginDetails,
+                events: events
+            });
+        })
     })
 
-    app.get(config.url + '/events', function(req, res) {
+    app.get(pluginDetails.url + '/events', function(req, res) {
         app.set('views', path.join(viewsDir));
-        res.render('dashboard-events', { layout: false, events: events });
+        repository.list(function(err, events) {    
+            if (err) return res.send(500, 'Error retrieving events: ' + err.message);
+            res.render('events', { layout: false, events: events });
+        })
     })
 
-    app.use(config.url, express.static(staticDir));   
+    app.use(pluginDetails.url, express.static(staticDir));   
 
-    return config;
+    repository.test(function(err) {
+        next(err, pluginDetails);
+    })
 }

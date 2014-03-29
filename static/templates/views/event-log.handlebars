@@ -15,20 +15,21 @@
 <table class="table table-condensed table-hover events" data-page-size="14" data-limit-navigation="10" data-filter="#filter">
     <thead>
         <th class="severity">Severity</th>
-        <th class="application">Application</th>
-        <th class="system">System</th>        
+        <th class="system">System</th>
+        <th class="group">Group</th>        
+        <th class="type">Type</th>
+        <th class="timestamp" data-sort-initial="descending">Timestamp</th>
         <th class="environment">Environment</th>
         <th class="host">Host</th>
-        <th class="type">Type</th>
-        <th class="occurred" data-sort-initial="descending">Occurred</th>
         <th class="message">Message</th>
+        <th class="link" data-sort-ignore="true">&nbsp;</th>
     </thead>
     <tbody>
-        {{> dashboard-events }}
+        {{> events }}
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="8" class="text-center">
+            <td colspan="9" class="text-center">
                 <ul class="pagination pagination-centered hide-if-no-paging"></ul>
             </td>
         </tr>

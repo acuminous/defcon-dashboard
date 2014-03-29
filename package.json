@@ -1,5 +1,5 @@
 {
-  "name": "defcon-dashboard",
+  "name": "defcon-event-log",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/acuminous/defcon-dashboard.git"
+    "url": "https://github.com/acuminous/defcon-event-log.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/acuminous/defcon-dashboard/issues"
+    "url": "https://github.com/acuminous/defcon-event-log/issues"
   },
-  "homepage": "https://github.com/acuminous/defcon-dashboard",
+  "homepage": "https://github.com/acuminous/defcon-event-log",
   "devDependencies": {
     "gulp": "^3.5.6",
     "gulp-concat": "~2.1.7",
@@ -35,6 +35,7 @@
     "async": "^0.2.10",
     "lodash": "^2.4.1",
     "moment": "^2.5.1",
-    "express": "^3.5.1"
+    "express": "^3.5.1",
+    "then-redis": "^0.3.12"
   }
 }
