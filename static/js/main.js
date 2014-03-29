@@ -10,9 +10,6 @@ $('table.events').footable().bind({
     }
 });
 
-$('#autoRefreshButtonGroup .active').on('click', lockTable.bind(this, 'manual'));
-$('#autoRefreshButtonGroup .inactive').on('click', unlockTable.bind(this, 'manual'));
-
 function lockTable(key) {
     locks[key] = true;
     $('#autoRefreshButtonGroup').removeClass('active').addClass('inactive');
@@ -41,3 +38,8 @@ function isLocked() {
         setTimeout(poll, interval);
     })   
 })();
+
+$(function() {
+    $('#autoRefreshButtonGroup .active').on('click', lockTable.bind(this, 'manual'));
+    $('#autoRefreshButtonGroup .inactive').on('click', unlockTable.bind(this, 'manual'));    
+})
