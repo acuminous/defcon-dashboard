@@ -16,7 +16,7 @@ function plugin(defcon, app, config, next) {
         ui: true,        
         name: 'Events',
         url: defcon.getPluginUrl('Event Log'),
-        icon: 'fa fa-list',
+        icon: 'fa fa-exclamation-circle',
         css: [ url + '/dist/css/bundle-libs.css', url + '/dist/css/bundle.css' ],
         js: [ url + '/dist/js/bundle-libs.js', url + '/dist/js/bundle.js' ]
     } 
