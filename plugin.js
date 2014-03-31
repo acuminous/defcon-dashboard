@@ -1,63 +1,70 @@
 var express = require('express');
-var packageJson = require('./package.json');
+var exphbs = require('express3-handlebars');
 var path = require('path');
-var HandlebarsHelpers = require('./lib/util/HandlebarsHelpers');
-var EventRepository = require('./lib/EventRepository')
 var _ = require('lodash');
+var HandlebarsHelpers = require('./lib/util/HandlebarsHelpers');
+var EventRepository = require('./lib/EventRepository');
 
-module.exports = plugin;
+module.exports.create = create;
 
-function plugin(defcon, app, config, next) {
+function create(context, next) {
 
-    var repository = new EventRepository(config.repository)
-    var url = defcon.getPluginUrl('Event Log');
-
-    var pluginDetails = {
-        ui: true,        
-        name: 'Events',
-        url: defcon.getPluginUrl('Event Log'),
-        icon: 'fa fa-exclamation-circle',
-        css: [ url + '/dist/css/bundle-libs.css', url + '/dist/css/bundle.css' ],
-        js: [ url + '/dist/js/bundle-libs.js', url + '/dist/js/bundle.js' ]
-    } 
-
-    defcon.on('event', function(event) {
-        repository.save(event, function(err) {
-            if (err) app.get('logger').error('Error saving event: %s', err.message);
-        });
-    })    
-
-    var staticDir = path.join(defcon.getPluginDir(packageJson.name), 'static');
+    var staticDir = path.join(__dirname, 'static');
     var templateDir = path.join(staticDir, 'templates');
     var viewsDir = path.join(templateDir, 'views');
+    var repository = new EventRepository(context.config.repository)
 
-    var handlebarsConfig = app.get('handlebarsConfig');
-    handlebarsConfig.partialsDir.push(viewsDir);
-    _.extend(handlebarsConfig.helpers, new HandlebarsHelpers());
+    var app = express();
+    app.disable('x-powered-by');
+    app.disable('view cache');    
+    app.set('view engine', 'handlebars');
+    app.set('views', viewsDir);
 
-    app.get(pluginDetails.url, function(req, res) {
-        app.set('views', path.join(viewsDir));        
+    var plugin = {
+        name: 'Event Log',
+        ui: true,
+        icon: 'fa fa-list',
+        app: app,
+        resources: {
+            js: ['dist/js/bundle-libs.js', 'dist/js/bundle.js'],
+            css: ['dist/css/bundle-libs.css', 'dist/css/bundle.css']
+        }                  
+    }    
+
+    app.engine('handlebars', exphbs({
+        defaultLayout: 'main',
+        layoutsDir: 'static/templates/layouts',
+        partialsDir: viewsDir,
+        helpers: new HandlebarsHelpers()        
+    }));
+
+    app.get('/', function(req, res) {
         repository.list(function(err, events) {
             if (err) return res.send(500, 'Error retrieving events: ' + err.message);
             res.render('event-log', { 
-                defcon: defcon,
-                plugin: pluginDetails,
+                defcon: context.defcon,
+                plugin: plugin,
                 events: events
             });
         })
     })
 
-    app.get(pluginDetails.url + '/events', function(req, res) {
-        app.set('views', path.join(viewsDir));
+    app.get('/events', function(req, res) {
         repository.list(function(err, events) {    
             if (err) return res.send(500, 'Error retrieving events: ' + err.message);
             res.render('events', { layout: false, events: events });
         })
     })
 
-    app.use(pluginDetails.url, express.static(staticDir));   
+    app.use('/', express.static(staticDir));       
+
+    context.defcon.on('event', function(event) {
+        repository.save(event, function(err) {
+            if (err) app.get('logger').error('Error saving event: %s', err.message);
+        });
+    }) 
 
     repository.test(function(err) {
-        next(err, pluginDetails);
+        next(err, plugin);
     })
 }
