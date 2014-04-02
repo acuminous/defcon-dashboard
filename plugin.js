@@ -4,15 +4,17 @@ var path = require('path');
 var _ = require('lodash');
 var HandlebarsHelpers = require('./lib/util/HandlebarsHelpers');
 var EventRepository = require('./lib/EventRepository');
+var packageJson = require('./package.json');
 
 module.exports.create = create;
 
 function create(context, next) {
 
+    var config = context.config;
     var staticDir = path.join(__dirname, 'static');
     var templateDir = path.join(staticDir, 'templates');
     var viewsDir = path.join(templateDir, 'views');
-    var repository = new EventRepository(context.config.repository)
+    var repository = new EventRepository(config)
 
     var app = express();
     app.disable('x-powered-by');
@@ -31,20 +33,20 @@ function create(context, next) {
         }                  
     }    
 
-    app.engine('handlebars', exphbs({
-        defaultLayout: 'main',
-        layoutsDir: 'static/templates/layouts',
+    app.engine('handlebars', exphbs(_.defaults({
         partialsDir: viewsDir,
-        helpers: new HandlebarsHelpers()        
-    }));
+        helpers: new HandlebarsHelpers()
+    }, context.handlebarsConfig)));
 
     app.get('/', function(req, res) {
         repository.list(function(err, events) {
             if (err) return res.send(500, 'Error retrieving events: ' + err.message);
             res.render('event-log', { 
+                pageId: packageJson.name,                 
+                config: config,                
                 defcon: context.defcon,
                 plugin: plugin,
-                events: events
+                events: events,
             });
         })
     })
@@ -60,11 +62,11 @@ function create(context, next) {
 
     context.defcon.on('event', function(event) {
         repository.save(event, function(err) {
-            if (err) app.get('logger').error('Error saving event: %s', err.message);
+            if (err) return context.logger.error('Error saving event: %s', err.message);
         });
     }) 
 
-    repository.test(function(err) {
+    repository.init(function(err) {
         next(err, plugin);
     })
 }

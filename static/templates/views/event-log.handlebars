@@ -12,13 +12,13 @@
         <span class="fa fa-pause"></span> Paused
     </button>
 </div>
-<table class="table table-condensed table-hover events" data-page-size="14" data-limit-navigation="10" data-filter="#filter">
+<table class="table table-condensed table-hover events" data-page-size="{{config.pageSize}}" data-limit-navigation="{{config.pages}}" data-filter="#filter">
     <thead>
         <th class="severity">Severity</th>
         <th class="system">System</th>
         <th class="group">Group</th>        
         <th class="type">Type</th>
-        <th class="timestamp" data-sort-initial="descending">Timestamp</th>
+        <th class="timestamp">Timestamp</th>
         <th class="environment">Environment</th>
         <th class="host">Host</th>
         <th class="message">Message</th>

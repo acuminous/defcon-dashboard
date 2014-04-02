@@ -20,7 +20,7 @@ function isLocked() {
     }) || false;
 }
 
-(function poll() {
+function poll() {
     if (isLocked()) return setTimeout(poll, interval);
     $.ajax({
         url : '/plugin/event-log/events',
@@ -32,7 +32,7 @@ function isLocked() {
             setTimeout(poll, interval);
         }
     })   
-})();
+};
 
 $(function() {
     $('#autoRefreshButtonGroup .active').on('click', lockTable.bind(this, 'manual'));
@@ -42,5 +42,7 @@ $(function() {
         footable_paging: function(e) {
             e.page > 0 ? lockTable('auto') : unlockTable('auto');
         }
-    });    
+    });
+
+    setTimeout(poll, interval);  
 })

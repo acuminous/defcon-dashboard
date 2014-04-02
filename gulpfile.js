@@ -42,16 +42,14 @@ gulp.task('fonts', function() {
 gulp.task('scripts', function() {
     return gulp.src(scripts)
         .pipe(plumber())
-        .pipe(ngmin())
         .pipe(concat('bundle.js'))
-        .pipe(uglify({outSourceMap: true}))  
+        .pipe(uglify({outSourceMap: true, mangle: false}))  
         .pipe(gulp.dest('static/dist/js'));
 });
 
 gulp.task('scriptLibs', function() {
     return gulp.src(scriptLibs)
         .pipe(plumber())
-        .pipe(ngmin())
         .pipe(concat('bundle-libs.js'))
         .pipe(uglify({outSourceMap: true}))
         .pipe(gulp.dest('static/dist/js'));

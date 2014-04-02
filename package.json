@@ -36,7 +36,7 @@
     "lodash": "^2.4.1",
     "moment": "^2.5.1",
     "express": "^3.5.1",
-    "then-redis": "^0.3.12",
-    "express3-handlebars": "^0.5.0"
+    "express3-handlebars": "^0.5.0",
+    "redis": "^0.10.1"
   }
 }
