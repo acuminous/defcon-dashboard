@@ -1,6 +1,11 @@
 {{#each events}}
     <tr>
-        <td class="severity"><span class="defcon defcon-{{severity}}">{{severity}}</span></td>
+        <td class="severity">
+            <span class="defcon defcon-{{severity}}">{{severity}}</span>
+            <span class="hidden">severity-{{severity}} sev-{{severity}} s-{{severity}} severity{{severity}} sev{{severity}} s{{severity}}</span>
+            <span class="hidden">priority-{{severity}} p-{{severity}} priority{{severity}} p{{severity}}</span>
+            <span class="hidden">defcon-{{severity}} defcon{{severity}}</span>
+        </td>
         <td class="system">{{system}}</td>                    
         <td class="group">{{group}}</td>
         <td class="type">{{type}}</td>        
