@@ -24,6 +24,9 @@ function create(context, next) {
 
     var plugin = {
         name: 'Event Log',
+        version: packageJson.version,        
+        description: packageJson.description,
+        repositoryUrl: packageJson.repository.url,
         ui: true,
         icon: 'fa fa-list',
         app: app,
@@ -46,7 +49,7 @@ function create(context, next) {
                 config: config,                
                 defcon: context.defcon,
                 plugin: plugin,
-                events: events,
+                events: events
             });
         })
     })
