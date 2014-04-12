@@ -1,37 +1,75 @@
+var express = require('express');
+var exphbs = require('express3-handlebars');
 var path = require('path');
 var _ = require('lodash');
-var async = require('async');
+var HandlebarsHelpers = require('./lib/util/HandlebarsHelpers');
+var EventRepository = require('./lib/EventRepository');
 var packageJson = require('./package.json');
-var RedisGateway = require('./lib/RedisGateway');
 
 module.exports.create = create;
 
 function create(context, next) {
 
-    var defcon = context.defcon;
     var config = context.config;
-    var logger = context.logger;
+    var staticDir = path.join(__dirname, 'static');
+    var templateDir = path.join(staticDir, 'templates');
+    var viewsDir = path.join(templateDir, 'views');
+    var repository = new EventRepository(config)
+
+    var app = express();
+    app.disable('x-powered-by');
+    app.disable('view cache');    
+    app.set('view engine', 'handlebars');
+    app.set('views', viewsDir);
+
     var plugin = {
+        name: 'Event Log',
         version: packageJson.version,        
         description: packageJson.description,
-        repositoryUrl: packageJson.repository.url
+        repositoryUrl: packageJson.repository.url,
+        ui: true,
+        icon: 'fa fa-list',
+        app: app,
+        resources: {
+            js: ['dist/js/bundle-libs.js', 'dist/js/bundle.js'],
+            css: ['dist/css/bundle-libs.css', 'dist/css/bundle.css']
+        }                  
     }    
 
-    new RedisGateway(config).init(function(err, gateway) {
-        if (err) return next(err);
+    app.engine('handlebars', exphbs(_.defaults({
+        partialsDir: viewsDir,
+        helpers: new HandlebarsHelpers()
+    }, context.handlebarsConfig)));
 
-        gateway.on('event', function(event) {
-            defcon.notify('event', event);
+    app.get('/', function(req, res) {
+        repository.list(function(err, events) {
+            if (err) return res.send(500, 'Error retrieving events: ' + err.message);
+            res.render('event-log', { 
+                pageId: packageJson.name,                 
+                config: config,                
+                defcon: context.defcon,
+                plugin: plugin,
+                events: events
+            });
+        })
+    })
+
+    app.get('/events', function(req, res) {
+        repository.list(function(err, events) {    
+            if (err) return res.send(500, 'Error retrieving events: ' + err.message);
+            res.render('events', { layout: false, events: events });
+        })
+    })
+
+    app.use('/', express.static(staticDir));       
+
+    context.defcon.on('event', function(event) {
+        repository.save(event, function(err) {
+            if (err) return context.logger.error('Error saving event: %s', err.message);
         });
+    }) 
 
-        gateway.on('error', function(err) {
-            logger.error('RedisGateway error: %s', err.message);
-        });
-
-        defcon.on('event', function(event) {
-            gateway.publish(event);
-        });
-
-        next(null, plugin);
-    });
+    repository.init(function(err) {
+        next(err, plugin);
+    })
 }

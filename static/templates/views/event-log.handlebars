@@ -1,0 +1,37 @@
+<form onsubmit="return false;" class="form-inline tableFilter">
+    <div class="form-group">
+        <label for=filter">Search&nbsp;</label>
+        <input id="filter" type="text" class="form-control" placeholder="search text">        
+    </div>    
+</form>
+<div id="autoRefreshButtonGroup" class="pull-right active">
+    <button type="button" class="btn btn-success active">
+        <span class="fa fa-refresh"></span> Auto Refresh
+    </button>
+    <button type="button" class="btn inactive">
+        <span class="fa fa-pause"></span> Paused
+    </button>
+</div>
+<table class="table table-condensed table-hover events" data-page-size="{{config.pageSize}}" data-limit-navigation="{{config.pages}}" data-filter="#filter">
+    <thead>
+        <th class="severity">Severity</th>
+        <th class="system">System</th>
+        <th class="group">Group</th>        
+        <th class="type">Type</th>
+        <th class="timestamp">Timestamp</th>
+        <th class="environment">Environment</th>
+        <th class="host">Host</th>
+        <th class="message">Message</th>
+        <th class="link" data-sort-ignore="true">&nbsp;</th>
+    </thead>
+    <tbody>
+        {{> events }}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="9" class="text-center">
+                <ul class="pagination pagination-centered hide-if-no-paging"></ul>
+            </td>
+        </tr>
+    </tfoot>
+</table>
