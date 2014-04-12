@@ -1,39 +1,29 @@
 {
-  "name": "defcon-event-log",
-  "version": "0.2.1",
-  "description": "Displays recent events via a web ui",
+  "name": "defcon-redis-gateway",
+  "version": "0.1.0",
+  "description": "Receives and forwards events via redis pubsub",
   "main": "plugin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node ./bin/install.js"    
+    "test": "mocha --recursive --reporter spec tests/*.test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/acuminous/defcon-event-log.git"
+    "url": "https://github.com/acuminous/defcon-redis-gateway.git"
   },
   "author": "Stephen Cresswell",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/acuminous/defcon-event-log/issues"
+    "url": "https://github.com/acuminous/defcon-redis-gateway/issues"
   },
-  "homepage": "https://github.com/acuminous/defcon-event-log",
+  "homepage": "https://github.com/acuminous/defcon-redis-gateway",
   "dependencies": {
     "async": "^0.2.10",
     "lodash": "^2.4.1",
-    "moment": "^2.5.1",
-    "express": "^3.5.1",
-    "express3-handlebars": "^0.5.0",
     "redis": "^0.10.1",
-    "gulp": "^3.5.6",
-    "gulp-concat": "~2.1.7",
-    "gulp-rename": "~1.2.0",
-    "gulp-plumber": "~0.5.6",
-    "gulp-cache": "~0.1.3",
-    "gulp-svgmin": "~0.4.4",
-    "gulp-less": "~1.2.2",
-    "gulp-ignore": "~1.0.0",
-    "gulp-uglify": "^0.2.1",
-    "gulp-replace": "^0.2.0",
-    "bower": "^1.3.1"    
+    "uuid": "^1.4.1"
+  },
+  "devDependencies": {
+    "mocha": "^1.18.2",
+    "chai": "^1.9.1"
   }
 }
