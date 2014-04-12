@@ -23,7 +23,7 @@ function isLocked() {
 function poll() {
     if (isLocked()) return setTimeout(poll, interval);
     $.ajax({
-        url : '/plugin/event-log/events',
+        url : '/plugin/defcon-event-log/events',
         success : function(data) {
             $('table.events tbody tr').remove();
             $('table.events tbody').append(data).trigger('footable_redraw');
