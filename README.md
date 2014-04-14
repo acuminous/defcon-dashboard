@@ -5,10 +5,10 @@
 1. [redis](http://redis.io)
 
 ## Installation
-1. '''cd $DEFCON_INSTALL_DIR'''
-2. '''npm install defcon-event-log'''
-3. '''Enable and configure 'defcon-event-log' in your DEFCON configuration file, e.g.
-'''json
+1. ```cd $DEFCON_INSTALL_DIR```
+2. ```npm install defcon-event-log```
+3. Enable and configure 'defcon-event-log' in your DEFCON configuration file, e.g.
+```json
 {
     "plugins": {
         "installed": [
@@ -29,5 +29,5 @@
         }        
     }
 }
-'''
-4. Restart defcon (you can do this via '''kill -s USRSIG2 <pid>''' if you want zero downtime)
+```
+4. Restart defcon (you can do this via ```kill -s USRSIG2 <pid>``` if you want zero downtime)
